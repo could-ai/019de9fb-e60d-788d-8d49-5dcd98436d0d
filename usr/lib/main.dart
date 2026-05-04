@@ -297,9 +297,52 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _insertVoiceTag(String tag) {
+    final text = _textController.text;
+    final selection = _textController.selection;
+    
+    if (selection.baseOffset < 0) {
+      _textController.text = text.isEmpty ? '$tag ' : '$text\n$tag ';
+      _textController.selection = TextSelection.collapsed(offset: _textController.text.length);
+      return;
+    }
+
+    final newText = text.replaceRange(selection.start, selection.end, '$tag ');
+    _textController.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: selection.start + tag.length + 1),
+    );
+  }
+
+  Widget _buildInsertVoiceButton(String tag, Color color) {
+    return ActionChip(
+      label: Text(tag, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+      onPressed: () => _insertVoiceTag(tag),
+      backgroundColor: color.withOpacity(0.1),
+      side: BorderSide(color: color),
+    );
+  }
+
   Widget _buildMainEditor() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const Text('أدوات الإدراج السريع (اختر الشخصية قبل الكتابة):', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          children: [
+            _buildInsertVoiceButton('[رجل]', Colors.red),
+            _buildInsertVoiceButton('[امرأة]', Colors.green),
+            _buildInsertVoiceButton('[مراهق]', Colors.blue),
+            _buildInsertVoiceButton('[بنت]', Colors.purple),
+            _buildInsertVoiceButton('[طفل]', Colors.orange),
+            _buildInsertVoiceButton('[صوت1]', Colors.grey),
+            _buildInsertVoiceButton('[صوت2]', Colors.black87),
+          ],
+        ),
+        const SizedBox(height: 16),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
