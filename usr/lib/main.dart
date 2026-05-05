@@ -93,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
   bool _isGenerating = false;
   bool _hasGenerated = false;
+  bool _isPlaying = false;
   String? _voice1File;
   String? _voice2File;
   
@@ -148,6 +149,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم توليد الحوار بنجاح مع الفوارق الزمنية!')),
       );
+    }
+  }
+
+  Future<void> _previewAudio() async {
+    setState(() {
+      _isPlaying = true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('جاري تشغيل المعاينة الصوتية...')),
+    );
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      setState(() {
+        _isPlaying = false;
+      });
     }
   }
 
@@ -380,6 +396,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             if (_hasGenerated && !_isGenerating) ...[
+              const SizedBox(width: 16),
+              ElevatedButton.icon(
+                onPressed: _isPlaying ? null : _previewAudio,
+                icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
+                label: Text(_isPlaying ? 'جاري التشغيل...' : 'معاينة الصوت'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                ),
+              ),
               const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: _downloadAudio,
